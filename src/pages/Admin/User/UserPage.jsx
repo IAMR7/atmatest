@@ -147,7 +147,7 @@ export default function UserPage() {
                                     (user.status.status === "Mahasiswa" ||
                                       user.status.status === "Alumni") && (
                                       <div className="badge badge-ghost">
-                                        2018
+                                        {user.year_generation}
                                       </div>
                                     )}
                                 </div>

@@ -201,7 +201,10 @@ export default function DashboardPage() {
                                     </div>
                                     <div>
                                       <div className="font-bold">
-                                        {user.name}
+                                        {user.name}{" "}
+                                        {user.verified === 1 && (
+                                          <i className="bx bx-fw bxs-badge-check text-success"></i>
+                                        )}
                                       </div>
                                     </div>
                                   </div>
