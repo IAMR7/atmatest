@@ -344,7 +344,7 @@ export default function ProfilePage() {
                             width={36}
                             height={36}
                             className="rounded-full m-2"
-                            src={`/images/${"female-profile.png"}`}
+                            src={`${config.API_IMG_URL}/avatars/${friend.avatar}`}
                             alt="profile-picture"
                           />
                         )}
