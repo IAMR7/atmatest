@@ -227,7 +227,7 @@ export default function ProfileEditPage() {
             </label>
             <input
               type="text"
-              placeholder="Isikan nomor telepon ..."
+              placeholder="Isikan nomor telepon"
               className="input input-bordered w-full text-sm"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
@@ -337,14 +337,13 @@ export default function ProfileEditPage() {
               onChange={(e) => setBio(e.target.value)}
             ></textarea>
           </div>
-          <div className="px-3 flex flex-row items-center gap-3">
+          <div className="px-3 flex flex-row justify-end items-center gap-3">
             <button
               className="btn btn-sm btn-primary"
               onClick={() => handleUpdateProfile()}
             >
               Simpan
             </button>
-            <button className="btn btn-sm">Batal</button>
           </div>
         </div>
       </div>

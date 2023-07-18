@@ -20,9 +20,12 @@ export default function PasswordEditPage() {
   };
 
   const handleUpdatePassword = async () => {
+    if (password === "" || confirmPassword === "") {
+      return toast.error("Password harus diisi semua");
+    }
+
     if (password !== confirmPassword) {
-      toast.error("Password tidak sama, ilangi lagi");
-      // return alert("anjing");
+      toast.error("Password tidak sama, ulangi lagi");
     } else {
       let apipath = `profile/edit/password/${user.id}`;
       let postData = {
@@ -75,7 +78,7 @@ export default function PasswordEditPage() {
               </label>
               <input
                 type="password"
-                placeholder="Isikan password baru ..."
+                placeholder="Isikan password baru"
                 className="input input-bordered w-full text-sm"
                 onChange={(e) => setPassword(e.target.value)}
                 value={password}
@@ -90,7 +93,7 @@ export default function PasswordEditPage() {
               </label>
               <input
                 type="password"
-                placeholder="Isikan ulang password baru ..."
+                placeholder="Isikan ulang password baru"
                 className="input input-bordered w-full text-sm"
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 value={confirmPassword}

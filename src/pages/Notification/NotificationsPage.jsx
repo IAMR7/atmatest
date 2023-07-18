@@ -73,7 +73,7 @@ export default function NotificationsPage() {
         <p className="text-lg font-bold mb-4">
           Notifikasi ({notifAccFriends?.length})
         </p>
-        <div className="mb-6">
+        <div className="mb-6 flex flex-col gap-3">
           {notifAccFriends?.length > 0 ? (
             notifAccFriends.map((notif) => {
               return (
@@ -95,8 +95,7 @@ export default function NotificationsPage() {
                       />
                     ) : (
                       <img
-                        width={36}
-                        className="rounded-full m-2"
+                        className="rounded-full m-2 w-12 h-12 object-cover"
                         src={`${config.API_IMG_URL}/avatars/${notif.user.avatar}`}
                         alt="profile-picture"
                       />

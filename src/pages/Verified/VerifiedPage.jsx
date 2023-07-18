@@ -36,6 +36,9 @@ export default function VerifiedPage() {
   };
 
   const handleRequestVerified = async () => {
+    if (image === null || note === "") {
+      return toast.error("Kolom isian wajib diisi");
+    }
     let apipath = `request/verified/add`;
     let formData = new FormData();
     formData.append("image", image);
@@ -144,7 +147,9 @@ export default function VerifiedPage() {
                 ></textarea>
               </div>
               <div className="flex flex-row items-center justify-end gap-3">
-                <button className="btn btn-sm">Batal</button>
+                <button className="btn btn-sm" onClick={() => navigate(-1)}>
+                  Batal
+                </button>
                 <button
                   className="btn btn-sm btn-primary"
                   onClick={() => handleRequestVerified()}

@@ -38,14 +38,11 @@ export default function Post({
       .delete(apipath, apiheader)
       .then((response) => {
         if (response.status === 200) {
-          let resp = response.data;
-
           if (typeof getPosts === "function") {
             getPosts();
           } else if (typeof getAllPosts === "function") {
             getAllPosts();
           }
-          toast.success(resp.message);
         }
       })
       .catch(() => {
@@ -64,13 +61,11 @@ export default function Post({
       .put(apipath, postdata, apiheader)
       .then((response) => {
         if (response.status === 201) {
-          let resp = response.data;
           if (typeof getPosts === "function") {
             getPosts();
           } else if (typeof getAllPosts === "function") {
             getAllPosts();
           }
-          toast.success(resp.message);
         }
       })
       .catch(() => {
@@ -123,17 +118,20 @@ export default function Post({
       content: writeComment,
       image: null,
     };
+
+    if (postdata.content === "") {
+      return toast.error("Isi komentar wajib diisi");
+    }
+
     return await api.postApi
       .post(apipath, postdata, apiheader)
       .then((response) => {
         if (response.status === 201) {
-          let resp = response.data;
           if (typeof getPosts === "function") {
             getPosts();
           } else if (typeof getAllPosts === "function") {
             getAllPosts();
           }
-          toast.success(resp.message);
         }
       })
       .catch(() => {
@@ -153,13 +151,11 @@ export default function Post({
       .put(apipath, postdata, apiheader)
       .then((response) => {
         if (response.status === 201) {
-          let resp = response.data;
           if (typeof getPosts === "function") {
             getPosts();
           } else if (typeof getAllPosts === "function") {
             getAllPosts();
           }
-          toast.success(resp.message);
         }
       })
       .catch(() => {
@@ -173,13 +169,11 @@ export default function Post({
       .delete(apipath, apiheader)
       .then((response) => {
         if (response.status === 200) {
-          let resp = response.data;
           if (typeof getPosts === "function") {
             getPosts();
           } else if (typeof getAllPosts === "function") {
             getAllPosts();
           }
-          toast.success(resp.message);
         }
       })
       .catch(() => {
@@ -218,9 +212,7 @@ export default function Post({
               />
             ) : (
               <img
-                width={36}
-                height={36}
-                className="rounded-full m-2"
+                className="rounded-full w-10 h-10 m-2 object-cover"
                 src={`${config.API_IMG_URL}/avatars/${user.avatar}`}
                 alt="profile-picture"
               />
@@ -439,8 +431,7 @@ export default function Post({
                           />
                         ) : (
                           <img
-                            width={36}
-                            className="rounded-full m-2"
+                            className="rounded-full m-2 object-cover w-10 h-10"
                             src={`${config.API_IMG_URL}/avatars/${userRedux.avatar}`}
                             alt="profile-picture"
                           />
@@ -593,10 +584,9 @@ export default function Post({
                           />
                         ) : (
                           <img
-                            width={40}
                             tabIndex={0}
-                            className="rounded-full m-2"
-                            src={`${config.API_IMG_URL}/avatars/${userRedux.avatar}`}
+                            className="rounded-full m-2 object-cover w-10 h-10"
+                            src={`${config.API_IMG_URL}/avatars/${item.user.avatar}`}
                             alt="profile-picture"
                           />
                         )}

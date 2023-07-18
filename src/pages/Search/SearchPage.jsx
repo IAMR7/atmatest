@@ -21,6 +21,10 @@ export default function SearchPage() {
   };
 
   const searchUser = async (params) => {
+    if (searchParams === "") {
+      return toast.error("Kolom pencarian harus diisi dulu");
+    }
+
     let apipath = `users/search?search=${params}`;
     return await api.getApi
       .get(apipath, apiheader)
@@ -126,11 +130,10 @@ export default function SearchPage() {
                     className="menu rounded-lg border border-base-300 px-4 py-4"
                   >
                     <div className="flex flex-row justify-between items-center">
-                      <div className="flex flex-row items-center">
+                      <div className="flex flex-row items-center gap-2">
                         {user.avatar === null ? (
                           <img
                             width={40}
-                            tabIndex={0}
                             className="rounded-full m-2"
                             src={`/images/${
                               user.gender === "Laki-laki"
@@ -141,11 +144,9 @@ export default function SearchPage() {
                           />
                         ) : (
                           <img
-                            width={40}
-                            tabIndex={0}
-                            className="rounded-full m-2"
+                            className="object-cover w-12 h-12 rounded-full"
                             src={`${config.API_IMG_URL}/avatars/${user.avatar}`}
-                            alt="profile-picture"
+                            alt="post-picture"
                           />
                         )}
                         <div className="flex flex-col">

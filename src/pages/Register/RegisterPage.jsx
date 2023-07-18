@@ -14,6 +14,7 @@ export default function RegisterPage() {
   const [major, setMajor] = useState(null);
   const [status, setStatus] = useState(null);
   const [year, setYear] = useState("");
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
@@ -36,6 +37,8 @@ export default function RegisterPage() {
           let resp = response.data;
           toast.success(resp.success);
           navigate("/login");
+        } else if (response.status === 203) {
+          setError(response.data.error);
         } else {
           toast.error("Terjadi kesalahan, coba ulangi");
         }
@@ -44,6 +47,8 @@ export default function RegisterPage() {
         toast.error("Ada kesalahan teknis, silahkan refresh ulang");
       });
   };
+
+  console.log(error);
 
   const getMajors = async () => {
     let apipath = `majors`;
@@ -100,9 +105,18 @@ export default function RegisterPage() {
                 <input
                   type="text"
                   placeholder="Isikan email"
-                  className="input input-bordered w-full text-sm"
+                  className={`input ${
+                    error !== null && error.email && "input-error"
+                  } input-bordered w-full text-sm`}
                   onChange={(e) => setEmail(e.target.value)}
                 />
+                {error !== null && error.email && (
+                  <label className="label">
+                    <span className="label-text-alt text-error">
+                      {error.email[0]}
+                    </span>
+                  </label>
+                )}
               </div>
               <div className="form-control w-full">
                 <label className="label">
@@ -111,10 +125,20 @@ export default function RegisterPage() {
                 <input
                   type="password"
                   placeholder="Isikan password"
-                  className="input input-bordered w-full text-sm"
+                  className={`input ${
+                    error !== null && error.password && "input-error"
+                  } input-bordered w-full text-sm`}
                   autoComplete="password"
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                {error !== null && error.password && (
+                  <label className="label">
+                    <span className="label-text-alt text-error">
+                      {"password minimal terdiri dari 6 karakter"} <br />
+                      {"password wajib terdiri dari huruf dan angka"}
+                    </span>
+                  </label>
+                )}
               </div>
             </div>
             <div className="flex flex-row flex-wrap lg:flex-nowrap items-center gap-3">
@@ -125,9 +149,18 @@ export default function RegisterPage() {
                 <input
                   type="text"
                   placeholder="Isikan nama"
-                  className="input input-bordered w-full text-sm"
+                  className={`input ${
+                    error !== null && error.name && "input-error"
+                  } input-bordered w-full text-sm`}
                   onChange={(e) => setName(e.target.value)}
                 />
+                {error !== null && error.name && (
+                  <label className="label">
+                    <span className="label-text-alt text-error">
+                      {error.name[0]}
+                    </span>
+                  </label>
+                )}
               </div>
               <div className="form-control w-full">
                 <label className="label">
@@ -136,9 +169,18 @@ export default function RegisterPage() {
                 <input
                   type="text"
                   placeholder="Isikan username"
-                  className="input input-bordered w-full text-sm"
+                  className={`input ${
+                    error !== null && error.username && "input-error"
+                  } input-bordered w-full text-sm`}
                   onChange={(e) => setUsername(e.target.value)}
                 />
+                {error !== null && error.username && (
+                  <label className="label">
+                    <span className="label-text-alt text-error">
+                      {error.username[0]}
+                    </span>
+                  </label>
+                )}
               </div>
             </div>
             <div className="form-control">
@@ -235,7 +277,7 @@ export default function RegisterPage() {
                       onChange={(e) => setYear(e.target.value)}
                     >
                       <option disabled value={0}>
-                        Pilih angkatan ...
+                        Pilih angkatan
                       </option>
                       <option value={2015}>2015</option>
                       <option value={2016}>2016</option>

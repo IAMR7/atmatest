@@ -18,6 +18,9 @@ export default function TicketPage() {
   };
 
   const addTicket = async () => {
+    if (title === "" || message === "") {
+      return toast.error("Kolom isian wajib diisi");
+    }
     let apipath = `ticket/add`;
     let postData = {
       title: title,

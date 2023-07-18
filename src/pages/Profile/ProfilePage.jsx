@@ -72,6 +72,9 @@ export default function ProfilePage() {
   };
 
   const addPost = async () => {
+    if (content === "") {
+      return toast.error("Kolom isian konten wajib diisi");
+    }
     let apipath = `post`;
     let formData = new FormData();
     formData.append("user_id", user.id);
@@ -82,10 +85,9 @@ export default function ProfilePage() {
       .post(apipath, formData, apiheader)
       .then((response) => {
         if (response.status === 201) {
-          let resp = response.data;
           setContent("");
           setImage(null);
-          toast.success(resp.message);
+
           getPosts();
         }
       })
@@ -100,8 +102,6 @@ export default function ProfilePage() {
       .delete(apipath, apiheader)
       .then((response) => {
         if (response.status === 200) {
-          let resp = response.data;
-          toast.success(resp.message);
           getFriends();
           getPosts();
         }
@@ -314,13 +314,13 @@ export default function ProfilePage() {
                 ✕
               </button>
             </div>
-            <div className="form-control mt-3">
+            {/* <div className="form-control mt-3">
               <input
                 type="text"
                 placeholder="Cari teman/saudara ..."
                 className="input input-bordered w-full h-12 text-sm"
               />
-            </div>
+            </div> */}
             <div className="py-4 overflow-y-auto">
               {friends.map((friend) => {
                 return (
@@ -341,9 +341,7 @@ export default function ProfilePage() {
                           />
                         ) : (
                           <img
-                            width={36}
-                            height={36}
-                            className="rounded-full m-2"
+                            className="rounded-full w-20 h-20 object-cover"
                             src={`${config.API_IMG_URL}/avatars/${friend.avatar}`}
                             alt="profile-picture"
                           />

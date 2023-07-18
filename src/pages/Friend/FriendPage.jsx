@@ -101,8 +101,6 @@ export default function FriendPage() {
     try {
       const response = await api.delApi.delete(apipath, apiheader);
       if (response.status === 200) {
-        let resp = response.data;
-        toast.success(resp.message);
         getFriends();
         getUser();
         getPosts();
@@ -196,9 +194,7 @@ export default function FriendPage() {
                 />
               ) : (
                 <img
-                  width={100}
-                  height={100}
-                  className="rounded-full"
+                  className="rounded-full object-cover w-20 h-20"
                   src={`${config.API_IMG_URL}avatars/${user?.avatar}`}
                   alt="profile-picture"
                 />
@@ -244,7 +240,10 @@ export default function FriendPage() {
                     Berteman <i className="bx bx-xs bx-check"></i>
                   </button>
                 ) : (
-                  <button className="btn btn-sm" onClick={() => addFriend()}>
+                  <button
+                    className="btn btn-outline btn-sm btn-primary"
+                    onClick={() => addFriend()}
+                  >
                     Tambah Teman
                   </button>
                 )}
@@ -297,13 +296,13 @@ export default function FriendPage() {
                 ✕
               </button>
             </div>
-            <div className="form-control mt-3">
+            {/* <div className="form-control mt-3">
               <input
                 type="text"
                 placeholder="Cari teman/saudara ..."
                 className="input input-bordered w-full h-12 text-sm"
               />
-            </div>
+            </div> */}
             <div className="py-4 overflow-y-auto flex flex-col gap-4">
               {friends?.map((friend) => {
                 return (

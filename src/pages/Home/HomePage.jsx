@@ -47,14 +47,17 @@ export default function HomePage() {
     formData.append("content", content);
     formData.append("image", image);
 
+    if (content === "") {
+      return toast.error("Konten postingan wajib diisi");
+    }
+
     return await api.postFileApi
       .post(apipath, formData, apiheader)
       .then((response) => {
         if (response.status === 201) {
-          let resp = response.data;
           setContent("");
           setImage(null);
-          toast.success(resp.message);
+          toast.success("Berhasil membuat postingan");
           getAllPosts();
         }
       })

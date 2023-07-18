@@ -43,9 +43,8 @@ export default function Navbar() {
             />
           ) : (
             <img
-              width={36}
               tabIndex={0}
-              className="rounded-full m-2"
+              className="rounded-full m-2 object-cover w-10 h-10"
               src={`${config.API_IMG_URL}/avatars/${user.avatar}`}
               alt="profile-picture"
             />

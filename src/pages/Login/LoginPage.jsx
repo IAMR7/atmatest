@@ -32,8 +32,8 @@ export default function LoginPage() {
           } else if (user.role.level === 2) {
             navigate("/home");
           }
-        } else {
-          toast.error("Email atau password!");
+        } else if (response.status === 203) {
+          toast.error("Email atau password salah, coba lagi");
         }
       })
       .catch((error) => {
