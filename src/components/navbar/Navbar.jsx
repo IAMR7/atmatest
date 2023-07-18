@@ -55,7 +55,7 @@ export default function Navbar() {
               tabIndex={0}
               className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
             >
-              <li>
+              {/* <li>
                 <Link to="/profile">Profil Admin</Link>
               </li>
               <li>
@@ -63,7 +63,7 @@ export default function Navbar() {
               </li>
               <li>
                 <Link to="/password/edit">Edit Password</Link>
-              </li>
+              </li> */}
               <li>
                 <a onClick={() => handleLogout()}>Logout</a>
               </li>
