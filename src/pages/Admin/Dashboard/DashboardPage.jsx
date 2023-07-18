@@ -25,7 +25,10 @@ export default function DashboardPage() {
       .then((response) => {
         if (response.status === 200) {
           let resp = response.data;
-          setUsers(resp.data);
+          let filter = resp.data.filter((user) => {
+            return user.role.level !== 1;
+          });
+          setUsers(filter);
         }
       })
       .catch(() => {
@@ -176,67 +179,65 @@ export default function DashboardPage() {
                       {users.length > 0 &&
                         users.map((user) => {
                           return (
-                            user.role.level !== 1 && (
-                              <tr key={user.id}>
-                                <td>
-                                  <div className="flex items-center space-x-3">
-                                    <div className="avatar">
-                                      <div className="mask mask-squircle w-12 h-12">
-                                        {user.avatar === null ? (
-                                          <img
-                                            src={`/images/${
-                                              user.gender === "Laki-laki"
-                                                ? "male-profile.png"
-                                                : "female-profile.png"
-                                            }`}
-                                            alt="profile-picture"
-                                          />
-                                        ) : (
-                                          <img
-                                            src={`${config.API_IMG_URL}/avatars/${user.avatar}`}
-                                            alt="profile-picture"
-                                          />
-                                        )}
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div className="font-bold">
-                                        {user.name}{" "}
-                                        {user.verified === 1 && (
-                                          <i className="bx bx-fw bxs-badge-check text-success"></i>
-                                        )}
-                                      </div>
+                            <tr key={user.id}>
+                              <td>
+                                <div className="flex items-center space-x-3">
+                                  <div className="avatar">
+                                    <div className="mask mask-squircle w-12 h-12">
+                                      {user.avatar === null ? (
+                                        <img
+                                          src={`/images/${
+                                            user.gender === "Laki-laki"
+                                              ? "male-profile.png"
+                                              : "female-profile.png"
+                                          }`}
+                                          alt="profile-picture"
+                                        />
+                                      ) : (
+                                        <img
+                                          src={`${config.API_IMG_URL}/avatars/${user.avatar}`}
+                                          alt="profile-picture"
+                                        />
+                                      )}
                                     </div>
                                   </div>
-                                </td>
-                                <td>
-                                  <p>{user.status.status}</p>
-                                </td>
-                                <td>
-                                  <div className="flex flex-row items-center gap-2">
-                                    <p>
-                                      {user.status !== null &&
-                                        (user.status.status === "Mahasiswa" ||
-                                          user.status.status === "Alumni" ||
-                                          user.status.status === "Dosen") &&
-                                        user.major.major}
-                                    </p>
+                                  <div>
+                                    <div className="font-bold">
+                                      {user.name}{" "}
+                                      {user.verified === 1 && (
+                                        <i className="bx bx-fw bxs-badge-check text-success"></i>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <p>{user.status.status}</p>
+                              </td>
+                              <td>
+                                <div className="flex flex-row items-center gap-2">
+                                  <p>
                                     {user.status !== null &&
                                       (user.status.status === "Mahasiswa" ||
-                                        user.status.status === "Alumni") && (
-                                        <div className="badge badge-ghost">
-                                          {user.year_generation}
-                                        </div>
-                                      )}
-                                  </div>
-                                </td>
-                                <th>
-                                  <button className="btn btn-xs btn-primary">
-                                    detail
-                                  </button>
-                                </th>
-                              </tr>
-                            )
+                                        user.status.status === "Alumni" ||
+                                        user.status.status === "Dosen") &&
+                                      user.major.major}
+                                  </p>
+                                  {user.status !== null &&
+                                    (user.status.status === "Mahasiswa" ||
+                                      user.status.status === "Alumni") && (
+                                      <div className="badge badge-ghost">
+                                        {user.year_generation}
+                                      </div>
+                                    )}
+                                </div>
+                              </td>
+                              <th>
+                                <button className="btn btn-xs btn-primary">
+                                  detail
+                                </button>
+                              </th>
+                            </tr>
                           );
                         })}
                     </tbody>
