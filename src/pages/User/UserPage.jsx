@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import Navbar from "../../components/navbar/Navbar";
 import Sidebar from "../../components/sidebar/Sidebar";
 import { api } from "../../api";
+import moment from "moment";
 
 export default function UserPage() {
   const [users, setUsers] = useState();
@@ -165,7 +166,8 @@ export default function UserPage() {
                       <th>Email</th>
                       <th>Role</th>
                       <th>Status</th>
-                      <th>Tombol Aksi</th>
+                      <th>Created at</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -188,7 +190,12 @@ export default function UserPage() {
                                 {user.active === true ? "Active" : "Inactive"}
                               </p>
                             </td>
-                            <th>
+                            <td>
+                              <p>
+                                {moment(user.created).format("DD MMMM YYYY")}
+                              </p>
+                            </td>
+                            <td>
                               <div className="flex flex-row gap-2 items-center">
                                 <button
                                   onClick={() => {
@@ -203,7 +210,7 @@ export default function UserPage() {
                                   Detail
                                 </button>
                               </div>
-                            </th>
+                            </td>
                           </tr>
                         );
                       })}

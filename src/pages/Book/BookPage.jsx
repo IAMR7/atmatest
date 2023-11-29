@@ -220,7 +220,7 @@ export default function BookPage() {
               </div>
               <div className="form-control w-full">
                 <label className="label">
-                  <span className="label-text font-semibold">Email</span>
+                  <span className="label-text font-semibold">Description</span>
                 </label>
 
                 <textarea
