@@ -1,120 +1,51 @@
-import { Link, useNavigate } from "react-router-dom";
-import Post from "../../components/post/Post";
-import Navbar from "../../components/navbar/Navbar";
-import { useSelector } from "react-redux";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { api } from "../../api";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import { config } from "../../config";
+import Navbar from "../../components/navbar/Navbar";
+import { setUser } from "../../redux/slices/userSlice";
+import { api } from "../../api";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
-  const [friends, setFriends] = useState([]);
-  const [posts, setPosts] = useState([]);
-  const [content, setContent] = useState("");
-  const [image, setImage] = useState(null);
-  const [countLikes, setCountLikes] = useState(0);
-  const [likeFromMe, setLikeFromMe] = useState();
 
-  const inputFileRef = useRef(null);
+  const [username, setUsername] = useState(user.username);
+  const [email, setEmail] = useState(user.email);
+  const [role, setRole] = useState(user.role);
+  const [active, setActive] = useState(user.active);
+
+  const dispatch = useDispatch();
 
   const apiheader = {
     headers: {
-      Authorization: "Bearer " + token,
+      Authorization: "Bearer " + token.token,
     },
   };
 
-  const getFriends = useCallback(async () => {
-    let apipath = `friendships/${user.id}`;
-    try {
-      const response = await api.getApi.get(apipath, apiheader);
-      if (response.status === 200) {
-        let resp = response.data;
-        let friends = [];
-        resp.map((friend) => {
-          if (friend.user.id !== user.id) {
-            friends.push(friend.user);
-          } else {
-            friends.push(friend.friend_user);
-          }
-        });
-        setFriends(friends);
-      }
-    } catch {
-      toast.error("Ada kesalahan teknis, silahkan refresh ulang");
-    }
-  }, [user.id]);
-
-  const getPosts = async () => {
-    let apipath = `posts/${user.id}`;
-    try {
-      const response = await api.getApi.get(apipath, apiheader);
-      if (response.status === 200) {
-        let resp = response.data;
-        let getlike = resp.map((post) => {
-          return post.like.find((me) => {
-            return me.user.id === user.id;
-          });
-        });
-        let countlike = resp.reduce(
-          (total, post) => total + post.like.length,
-          0
-        );
-        setPosts(resp);
-        setLikeFromMe(getlike);
-        setCountLikes(countlike);
-      }
-    } catch {
-      toast.error("Ada kesalahan teknis, silahkan refresh ulang");
-    }
-  };
-
-  const addPost = async () => {
-    if (content === "") {
-      return toast.error("Kolom isian konten wajib diisi");
-    }
-    let apipath = `post`;
-    let formData = new FormData();
-    formData.append("user_id", user.id);
-    formData.append("content", content);
-    formData.append("image", image);
-
-    return await api.postFileApi
-      .post(apipath, formData, apiheader)
-      .then((response) => {
-        if (response.status === 201) {
-          setContent("");
-          setImage(null);
-
-          getPosts();
-        }
-      })
-      .catch(() => {
-        toast.error("Ada kesalahan teknis, silahkan coba lagi");
-      });
-  };
-
-  const deleteFriend = async (friendId) => {
-    let apipath = `friendship/${friendId}`;
-    return await api.delApi
-      .delete(apipath, apiheader)
+  const updateUser = async () => {
+    let apipath = `users/${user._id}`;
+    let postData = {
+      username: username,
+      email: email,
+      role: role,
+      active: active,
+    };
+    return await api.putApi
+      .put(apipath, postData, apiheader)
       .then((response) => {
         if (response.status === 200) {
-          getFriends();
-          getPosts();
+          let resp = response.data;
+          dispatch(setUser({ user: resp }));
+          toast.success(`Success update ${resp.username}`);
         }
       })
-      .catch(() => {
+      .catch((e) => {
         toast.error("Ada kesalahan teknis, silahkan coba lagi");
+        console.log(e);
       });
   };
-
-  useEffect(() => {
-    getFriends();
-    getPosts();
-  }, []);
 
   return (
     <div className="page-content">
@@ -139,242 +70,65 @@ export default function ProfilePage() {
           <i className="bx bx-sm bx-left-arrow-alt"></i>
           <p className="font-semibold">Kembali</p>
         </div>
-        <div className="border border-base-300 rounded-lg p-1">
-          <div className="cover_profile h-40 w-full relative">
-            {user.cover === null ? (
-              <img
-                className="absolute top-0 left-0 rounded-lg object-cover w-full h-full"
-                src={"/images/cover-default.jpg"}
-                alt="post-picture"
-              />
-            ) : (
-              <img
-                className="absolute top-0 left-0 rounded-lg object-cover w-full h-full"
-                src={`${config.API_IMG_URL}/covers/${user.cover}`}
-                alt="post-picture"
-              />
-            )}
-
-            <div className="pic_profile absolute -bottom-10 left-3 z-0">
-              {user.avatar === null ? (
-                <img
-                  className="rounded-full"
-                  width={100}
-                  height={100}
-                  src={`/images/${
-                    user.gender === "Laki-laki"
-                      ? "male-profile.png"
-                      : "female-profile.png"
-                  }`}
-                  alt="profile-picture"
-                />
-              ) : (
-                <img
-                  width={100}
-                  height={100}
-                  className="rounded-full"
-                  src={`${config.API_IMG_URL}/avatars/${user.avatar}`}
-                  alt="profile-picture"
-                />
-              )}
-            </div>
+        <div className="flex flex-col gap-4 mb-32 form-control w-full">
+          <div className="form-control px-3 w-full">
+            <label className="label">
+              <span className="label-text font-bold">Username</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Input name"
+              className="input input-bordered w-full text-sm"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
           </div>
-          <div className="mt-12 px-3 py-2">
-            <div className="head-profile">
-              <h1
-                className="font-bold text-lg"
-                onClick={() => toast.success("tes")}
-              >
-                {user.name.toUpperCase()}{" "}
-                {user.verified !== 0 && (
-                  <i className="bx bx-fw bxs-badge-check text-success"></i>
-                )}
-              </h1>
-              <p className="text-xs">
-                {user.status_id !== null && user.status.status}{" "}
-                {user.major_id !== null && user.major.major}
-                {user.major_id !== null &&
-                  (user.status.status === "Mahasiswa" ||
-                    user.status.status === "Alumni") &&
-                  ` (${user.year_generation})`}
-              </p>
-              <div className="flex flex-row justify-start items-center gap-2 mt-2">
-                <p className="text-xs">
-                  <span className="font-bold">Teman:</span> {friends.length}
-                </p>
-                <p className="text-xs">
-                  <span className="font-bold">Postingan:</span> {posts.length}
-                </p>
-                <p className="text-xs">
-                  <span className="font-bold">Disukai:</span> {countLikes}
-                </p>
-              </div>
-              <p className="text-xs mt-2">
-                <span className="font-bold">Bio:</span> {user.bio}
-              </p>
-              <div className="flex flex-row items-center gap-1 mt-2">
-                <button
-                  className="btn btn-sm"
-                  onClick={() => window.modal_friends.showModal()}
-                >
-                  Daftar Teman
-                </button>
-                <Link to={"/profile/edit"} className="btn btn-sm">
-                  Edit Profil
-                </Link>
-              </div>
-            </div>
+          <div className="form-control px-3 w-full">
+            <label className="label">
+              <span className="label-text font-bold">Email</span>
+            </label>
+            <input
+              type="email"
+              placeholder="Isikan email"
+              className="input input-bordered w-full text-sm"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="form-control px-3 w-full">
+            <label className="label">
+              <span className="label-text font-semibold">Role</span>
+            </label>
+            <select
+              className="select border-slate-300 w-full"
+              onChange={(e) => setRole(e.target.value)}
+              value={role}
+            >
+              <option disabled>Select role</option>
+              <option value={"admin"}>Admin</option>
+              <option value={"member"}>Member</option>
+            </select>
+          </div>
+          <div className="form-control px-3 w-full">
+            <label className="label">
+              <span className="label-text font-semibold">Active</span>
+            </label>
+            <input
+              type="checkbox"
+              className="toggle"
+              checked={active === true ? true : false}
+              onChange={(e) => setActive(e.target.checked)}
+            />
+          </div>
+          <div className="px-3 flex flex-row justify-end items-center gap-3">
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={() => updateUser()}
+            >
+              Save Changes
+            </button>
           </div>
         </div>
-        <div className="main-content lg:px-40 mt-6">
-          <div className="w-full mb-6">
-            <textarea
-              placeholder="Tulis sesuatu untuk diceritakan ..."
-              className="textarea textarea-bordered textarea-md w-full font-sm"
-              onChange={(e) => setContent(e.target.value)}
-              value={content}
-            ></textarea>
-            <div className="flex justify-between items-center">
-              <button
-                className="btn btn-sm"
-                onClick={() => inputFileRef.current.click()}
-              >
-                Upload Gambar
-              </button>
-              <input
-                type="file"
-                ref={inputFileRef}
-                style={{ display: "none" }}
-                onChange={(e) => {
-                  setImage(e.target.files[0]);
-                }}
-              />
-              <button
-                className="btn btn-sm btn-primary"
-                onClick={() => addPost()}
-              >
-                Posting
-              </button>
-            </div>
-          </div>
-
-          {image !== null && (
-            <div className="indicator">
-              <span
-                className="indicator-item rounded-full pl-1 bg-primary-content"
-                onClick={() => setImage(null)}
-              >
-                <i className="bx bx-fw bx-x text-primary"></i>
-              </span>
-              <img
-                className="rounded-md mb-5"
-                width={100}
-                height={100}
-                src={URL.createObjectURL(image)}
-                alt="profile-picture"
-              />
-            </div>
-          )}
-
-          <div className="list-post flex flex-col gap-3">
-            {posts ? (
-              posts.map((post, index) => {
-                return (
-                  <Post
-                    key={post.id}
-                    postId={post.id}
-                    user={post.user}
-                    comment={post.comment}
-                    like={post.like}
-                    image={post.image}
-                    content={post.content}
-                    date={post.created_at}
-                    likeFromMe={likeFromMe[index]}
-                    getPosts={getPosts}
-                  />
-                );
-              })
-            ) : (
-              <h1>Tunggu sebentar ...</h1>
-            )}
-          </div>
-        </div>
-        {/* start modal friends */}
-        <dialog
-          id="modal_friends"
-          className="modal modal-bottom sm:modal-middle"
-        >
-          <form method="dialog" className="modal-box h-full">
-            <div className="flex flex-row justify-between items-center">
-              <p>Total Teman ({friends.length})</p>
-              <button
-                htmlFor="my-modal-3"
-                className="btn btn-sm btn-circle btn-ghost"
-              >
-                ✕
-              </button>
-            </div>
-            {/* <div className="form-control mt-3">
-              <input
-                type="text"
-                placeholder="Cari teman/saudara ..."
-                className="input input-bordered w-full h-12 text-sm"
-              />
-            </div> */}
-            <div className="py-4 overflow-y-auto">
-              {friends.map((friend) => {
-                return (
-                  <div key={friend.id} className="py-1 mb-6">
-                    <div className="flex flex-row justify-between items-center">
-                      <div className="flex flex-row items-center gap-2">
-                        {friend.avatar === null ? (
-                          <img
-                            width={36}
-                            height={36}
-                            className="rounded-full m-2"
-                            src={`/images/${
-                              friend.gender === "Laki-laki"
-                                ? "male-profile.png"
-                                : "female-profile.png"
-                            }`}
-                            alt="profile-picture"
-                          />
-                        ) : (
-                          <img
-                            className="rounded-full w-20 h-20 object-cover"
-                            src={`${config.API_IMG_URL}/avatars/${friend.avatar}`}
-                            alt="profile-picture"
-                          />
-                        )}
-                        <div className="flex flex-col">
-                          <p className="font-medium">
-                            {friend.name}{" "}
-                            {friend.verified === 1 && (
-                              <i className="bx bx-fw bxs-badge-check text-success"></i>
-                            )}
-                          </p>
-                          <p className="text-xs">
-                            {friend.status_id !== null && friend.status.status}{" "}
-                            {friend.major_id !== null && friend.major.major}
-                            {friend.major_id !== null &&
-                              (friend.status.status === "Mahasiswa" ||
-                                friend.status.status === "Alumni") &&
-                              ` (${friend.year_generation})`}
-                          </p>
-                        </div>
-                      </div>
-                      <i
-                        className="bx bx-fw bx-trash text-error"
-                        onClick={() => deleteFriend(friend.id)}
-                      ></i>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </form>
-        </dialog>
-        {/* end modal friends */}
       </div>
     </div>
   );

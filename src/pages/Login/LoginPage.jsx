@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { setToken, setUser } from "../../redux/slices/userSlice";
 import { api } from "../../api";
 import { ToastContainer, toast } from "react-toastify";
@@ -12,9 +12,10 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState();
   const [password, setpassword] = useState();
+  // const stateToken = useSelector((state) => state.token);
 
   const handleLogin = async () => {
-    let apipath = "login";
+    let apipath = "auth/login";
     const postdata = {
       email: email,
       password: password,
@@ -23,15 +24,34 @@ export default function LoginPage() {
       .post(apipath, postdata)
       .then((response) => {
         if (response.status === 200) {
-          let { user, token } = response.data;
+          let token = response.data;
+          // console.log(token);
           dispatch(setToken({ token }));
+          handleUser(token.token);
+          navigate("/dashboard");
+        } else if (response.status === 203) {
+          toast.error("Email atau password salah, coba lagi");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleUser = async (token) => {
+    const apiheader = {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    };
+    let apipath = "users/me";
+
+    return await api.getApi
+      .get(apipath, apiheader)
+      .then((response) => {
+        if (response.status === 200) {
+          let user = response.data;
           dispatch(setUser({ user }));
-          toast.success("Yeay! kamu berhasil login");
-          if (user.role.level === 1) {
-            navigate("/admin/dashboard");
-          } else if (user.role.level === 2) {
-            navigate("/home");
-          }
         } else if (response.status === 203) {
           toast.error("Email atau password salah, coba lagi");
         }
@@ -57,16 +77,17 @@ export default function LoginPage() {
       />
       <div className="hero-content flex-col lg:flex-row-reverse">
         <div className="text-center lg:text-left lg:px-40">
-          <h1 className="text-5xl font-bold">Terhubung Bersama!</h1>
+          <h1 className="text-5xl font-bold">Atmatest</h1>
           <p className="py-6 text-lg">
-            Sebarkan cerita menarikmu kepada teman-teman sekitarmu dan terhubung
-            dengan mereka untuk saling berbagi keseruan lainnya
+            Dashboard manajemen pengguna dan buku untuk tes rekrutmen Frontend
+            Engineer
           </p>
         </div>
         <div className="card flex-shrink-0 w-full max-w-sm shadow-sm bg-base-100">
           <div className="card-body">
             <div className="flex flex-row justify-center items-center">
-              <img src="/images/text-studentgram.png" alt="" className="w-36" />
+              {/* <img src="/images/text-studentgram.png" alt="" className="w-36" /> */}
+              <p className="text-2xl text-center font-bold">Book API</p>
             </div>
             <form>
               <div className="form-control">
@@ -97,14 +118,6 @@ export default function LoginPage() {
               <button className="btn btn-primary" onClick={() => handleLogin()}>
                 Login
               </button>
-            </div>
-            <div className="form-control">
-              <Link
-                className="btn btn-ghost border border-primary text-primary hover:bg-base-200 hover:border hover:border-primary"
-                to={"/register"}
-              >
-                Register
-              </Link>
             </div>
           </div>
         </div>

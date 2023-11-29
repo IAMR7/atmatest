@@ -28,6 +28,10 @@ const store = configureStore({
       },
     }),
 });
+// const store = configureStore({
+//   reducer: persistedReducer,
+//   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
+// });
 
 export const persistor = persistStore(store);
 export default store;
